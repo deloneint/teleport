@@ -2,7 +2,7 @@
 // Конфигурация
 const CONFIG = {
     spreadsheetId: '18CV2mGHXk28i6YrXK5R1CaH3BaQHOA45qwi1r07NkzI',
-    sheetName: 'Потребность для ред',
+    sheetName: 'Потребность готовый',
     defaultCenter: [55.751244, 37.618423]
 };
 
@@ -140,6 +140,7 @@ function createMap(center) {
 function processSheetData(rows) {
     try {
         const headers = rows[0].map(h => h.toString().trim());
+        const numberIndex = headers.findIndex(h => h.match('ТК'));
         const addressIndex = headers.findIndex(h => h.match('Адрес'));
         const positionIndex = headers.findIndex(h => h.match('Должность'));
         const countIndex = headers.findIndex(h => h.match('Сколько нужно людей'));
@@ -153,14 +154,15 @@ function processSheetData(rows) {
 
         for (let i = 1; i < rows.length; i++) {
             const row = rows[i];
-            if (!row || row.length < Math.max(addressIndex, positionIndex, countIndex, cashIndex)) continue;
+            if (!row || row.length < Math.max(numberIndex, addressIndex, positionIndex, countIndex, cashIndex)) continue;
 
+            const number = parseInt(row[numberIndex]) || 0;
             const address = row[addressIndex]?.toString().trim();
             const position = row[positionIndex]?.toString().trim();
             const count = parseInt(row[countIndex]) || 0;
             const cash = parseInt(row[cashIndex]) || 0;
 
-            if (!address || !position || isNaN(count) || isNaN(cash)) continue;
+            if (isNaN(number) || !address || !position || isNaN(count) || isNaN(cash)) continue;
 
             if (!locationMap.has(address)) {
                 locationMap.set(address, {
@@ -171,6 +173,7 @@ function processSheetData(rows) {
             // Сохраняем и количество, и тариф
             locationMap.get(address).positions.set(position, {
                 count: (locationMap.get(address).positions.get(position)?.count || 0) + count,
+                number: number,
                 cash: cash // Если тарифы могут различаться, нужно определить логику объединения
             });
         }
@@ -235,9 +238,12 @@ async function addPlacemarksToMap(locations) {
 function createPlacemark(geoObject, location) {
     const coords = geoObject.geometry.getCoordinates();
 
+    // Получаем первый номер ТК для этого адреса (все номера для одного адреса одинаковы)
+    const firstTKNumber = Array.from(location.positions.values())[0]?.number || '';
+
     let balloonContent = `
                 <div class="balloon-content">
-                    <div class="balloon-title">${location.address}</div>`;
+                    <div class="balloon-title">ТК ${firstTKNumber} ${location.address}</div>`;
 
     location.positions.forEach((data, position) => {
         balloonContent += `
