@@ -2,7 +2,7 @@
 // Конфигурация
 const CONFIG = {
     spreadsheetId: '18CV2mGHXk28i6YrXK5R1CaH3BaQHOA45qwi1r07NkzI',
-    sheetName: 'Потребность',
+    sheetName: 'Потребность для ред',
     defaultCenter: [55.751244, 37.618423]
 };
 
