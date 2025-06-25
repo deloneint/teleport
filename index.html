@@ -4,22 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Телепорт. Карта сотрудников</title>
+    <title>Карта сотрудников (2GIS)</title>
     <link rel="shortcut icon" href="teleport2.png">
-    <link rel="stylesheet" type="text/css" href="styles.css" media="all">
+    <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100" rel="stylesheet">
+    <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=5e4cd6ee-6dee-4802-bb95-0dae1f45d05d&lang=ru_RU"></script>
-    <script src="script.js"></script>
-
+    <script src="script.js" defer></script>
 </head>
 
 <body>
-    <div id="map"></div>
-    <div id="loading">
-        <div>Загрузка данных...</div>
-        <div id="error"></div>
-        <!-- <button class="retry-btn" onclick="initApp()">Повторить попытку</button> -->
+    <div id="map-container">
+        <div id="map"></div>
+        <div id="controls">
+            <input type="text" id="search-input" placeholder="Введите адрес">
+            <button id="search-btn">Поиск</button>
+            <div id="search-results"></div>
+        </div>
+
     </div>
+    <div id="loading">Загрузка...</div>
 
 </body>
 
