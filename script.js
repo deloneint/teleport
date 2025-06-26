@@ -472,6 +472,17 @@ function selectMetroStation(station) {
     window.currentMetroMarker.openPopup();
 }
 
+function handleOrientationChange() {
+    if (window.orientation !== undefined) {
+        const isPortrait = Math.abs(window.orientation) !== 90;
+        map.invalidateSize();
+        if (!isPortrait && window.currentMetroMarker) {
+            map.setZoom(14);
+        }
+    }
+}
+window.addEventListener('orientationchange', handleOrientationChange);
+
 // Запуск при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof DG === 'undefined' || typeof ymaps === 'undefined') {
