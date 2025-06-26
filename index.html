@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,15 +12,23 @@
     <script src="https://api-maps.yandex.ru/2.1/?apikey=5e4cd6ee-6dee-4802-bb95-0dae1f45d05d&lang=ru_RU"></script>
     <script type="module" src="script.js" defer></script>
 </head>
+
 <body>
     <div id="map-container">
-        <div id="map"></div>
-        <div id="metro-controls" class="map-control">
-            <button id="toggle-metro">Показать метро</button>
+        <div id="map">
+            <div id="metro-controls" class="map-control">
+                <button id="toggle-metro">Показать метро</button>
+            </div>
+            <!--<div id="metro-search" class="map-control">
+                <input type="text" id="metro-search-input" placeholder="Поиск станции метро...">
+                <div id="metro-suggestions"></div>
+            </div>-->
         </div>
+
     </div>
     <div id="loading">
         <p>Загрузка...</p>
     </div>
 </body>
+
 </html>

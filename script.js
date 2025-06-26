@@ -38,6 +38,7 @@ async function initApp() {
     //4. Инициализация станции метро
     DG.then(() => {
         initMetroControls();
+        initMetroSearch();
     })
 
     hideLoading();
@@ -239,6 +240,29 @@ function showError(message) {
     alert(message);
 }
 
+//Создаем иконку
+function createCircleIcon(color, size = 12) {
+    // Создаем canvas элемент
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+
+    const ctx = canvas.getContext('2d');
+
+    // Рисуем круг
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2 - 1, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    // Добавляем белую границу (опционально)
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'white';
+    ctx.stroke();
+
+    return canvas;
+}
+
 //Функция для отображения станции метро
 function showMetroStations(city) {
     if (!metroData[city]) return;
@@ -253,17 +277,18 @@ function showMetroStations(city) {
         //Линия между станциями
         //const stationsCoords = line.stations.map(st => st.coords);
         //const polyline = DG.polyline(stationsCoords, {
-          //  color: line.color,
-            //weight: 6,
-            //opacity: 0.8
+        //  color: line.color,
+        //weight: 6,
+        //opacity: 0.8
         //}).addTo(metroLayer);
 
         //Станции
         line.stations.forEach(station => {
+            const lineColor = line.color;
             DG.marker(station.coords, {
                 icon: DG.icon({
-                    iconUrl: `<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><g><path d="M437.02,74.98C388.667,26.629,324.38,0,256,0S123.333,26.629,74.98,74.98C26.628,123.332,0,187.62,0,256 s26.629,132.667,74.98,181.02C123.332,485.372,187.62,512,256,512s132.667-26.629,181.02-74.98 C485.372,388.668,512,324.38,512,256S485.371,123.333,437.02,74.98z M256,482.462C131.129,482.462,29.538,380.871,29.538,256 S131.129,29.538,256,29.538S482.462,131.129,482.462,256S380.871,482.462,256,482.462z"/></g></g><g><g><path d="M405.689,106.311C365.706,66.328,312.545,44.308,256,44.308s-109.706,22.02-149.689,62.003 C66.328,146.294,44.308,199.455,44.308,256s22.02,109.706,62.003,149.689c39.983,39.983,93.144,62.003,149.689,62.003 s109.706-22.02,149.689-62.003c39.983-39.983,62.003-93.144,62.003-149.689S445.672,146.294,405.689,106.311z M256,438.154 C155.56,438.154,73.846,356.44,73.846,256S155.56,73.846,256,73.846c100.441,0,182.154,81.714,182.154,182.154 S356.441,438.154,256,438.154z"/></g></g><g><g><path d="M354.462,162.462h-59.077c-4.223,0-8.243,1.807-11.046,4.965L256,199.358l-28.338-31.93 c-2.803-3.16-6.823-4.966-11.046-4.966h-59.077c-8.157,0-14.769,6.613-14.769,14.769v157.538c0,8.157,6.613,14.769,14.769,14.769 h39.385c8.157,0,14.769-6.613,14.769-14.769v-75.417l33.46,36.209c2.795,3.026,6.728,4.746,10.848,4.746s8.051-1.72,10.848-4.746 l33.46-36.209v75.417c0,8.157,6.613,14.769,14.769,14.769h39.385c8.157,0,14.769-6.613,14.769-14.769V177.231 C369.231,169.074,362.618,162.462,354.462,162.462z M339.692,320h-9.846v-98.393c0-6.08-3.726-11.539-9.387-13.754 c-5.66-2.214-12.102-0.735-16.228,3.731L256,263.776l-48.229-52.193c-4.126-4.465-10.565-5.945-16.228-3.731 c-5.662,2.215-9.387,7.674-9.387,13.754V320h-9.846V192h37.668l34.977,39.411c2.803,3.159,6.823,4.965,11.046,4.965 s8.243-1.807,11.046-4.965L302.024,192h37.668V320z"/></g></g></svg>`,
-                    iconSize: [24, 24],
+                    iconUrl: createCircleIcon(lineColor).toDataURL(),
+                    iconSize: [12, 12],
                     iconAnchor: [12, 12]
                 })
             })
@@ -302,6 +327,138 @@ function hideMetroStations() {
     if (window.metroLayers) {
         window.metroLayers.forEach(layer => map.removeLayer(layer));
     }
+}
+
+// Глобальные переменные для поиска метро
+let metroStationsList = [];
+
+function initMetroSearch() {
+    const input = document.getElementById('metro-search-input');
+    const suggestions = document.getElementById('metro-suggestions');
+
+    // Собираем все станции метро в один массив
+    metroStationsList = metroData.Москва.lines.flatMap(line =>
+        line.stations.map(station => ({
+            name: station.name,
+            coords: station.coords,
+            line: line.name,
+            lineColor: line.color
+        }))
+    );
+
+    input.addEventListener('input', function (e) {
+        const query = e.target.value.toLowerCase().trim();
+        suggestions.innerHTML = '';
+
+        if (query.length < 2) {
+            suggestions.style.display = 'none';
+            return;
+        }
+
+        // Ищем совпадения (регистронезависимо)
+        const matches = metroStationsList.filter(station =>
+            station.name.toLowerCase().includes(query)
+        ).slice(0, 10); // Ограничиваем 10 подсказками
+
+        if (matches.length > 0) {
+            matches.forEach(station => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item';
+                div.innerHTML = `
+          <span style="color:${station.lineColor}">●</span> 
+          ${highlightMatch(station.name, query)}
+          <small style="color:#666">${station.line}</small>
+        `;
+                div.addEventListener('click', () => {
+                    selectMetroStation(station);
+                    suggestions.style.display = 'none';
+                });
+                suggestions.appendChild(div);
+            });
+            suggestions.style.display = 'block';
+        } else {
+            suggestions.style.display = 'none';
+        }
+    });
+
+    // Обработка клавиатуры
+    input.addEventListener('keydown', function (e) {
+        const items = suggestions.querySelectorAll('.suggestion-item');
+        let current = suggestions.querySelector('.highlighted');
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (!current) {
+                items[0]?.classList.add('highlighted');
+            } else {
+                current.classList.remove('highlighted');
+                current.nextElementSibling?.classList.add('highlighted');
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (current) {
+                current.classList.remove('highlighted');
+                current.previousElementSibling?.classList.add('highlighted');
+            }
+        } else if (e.key === 'Enter' && current) {
+            const index = [...items].indexOf(current);
+            const station = metroStationsList.find(s =>
+                s.name === current.textContent.split('\n')[0].trim()
+            );
+            if (station) selectMetroStation(station);
+        }
+    });
+
+    // Скрываем подсказки при клике вне области
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#metro-search')) {
+            suggestions.style.display = 'none';
+        }
+    });
+}
+
+function highlightMatch(text, query) {
+    const index = text.toLowerCase().indexOf(query.toLowerCase());
+    if (index >= 0) {
+        return `
+      ${text.substring(0, index)}
+      <strong>${text.substring(index, index + query.length)}</strong>
+      ${text.substring(index + query.length)}
+    `;
+    }
+    return text;
+}
+
+function selectMetroStation(station) {
+    // Удаляем предыдущий маркер
+    if (window.currentMetroMarker) {
+        map.removeLayer(window.currentMetroMarker);
+    }
+
+    // Создаем новый маркер
+    window.currentMetroMarker = DG.marker(station.coords, {
+        icon: DG.icon({
+            iconUrl: createCircleIcon(lineColor),
+            iconSize: [32, 32],
+            iconAnchor: [16, 32]
+        })
+    })
+        .bindPopup(`
+    <div class="metro-popup">
+      <h3 style="color:${station.lineColor}">${station.name}</h3>
+      <p>Линия: ${station.line}</p>
+    </div>
+  `)
+        .addTo(map);
+
+    // Центрируем карту
+    map.setView(station.coords, 16);
+
+    // Заполняем поле ввода
+    document.getElementById('metro-search-input').value = station.name;
+
+    // Открываем popup
+    window.currentMetroMarker.openPopup();
 }
 
 // Запуск при загрузке страницы
