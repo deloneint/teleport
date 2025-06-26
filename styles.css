@@ -150,7 +150,7 @@ html {
 .map-control {
   position: absolute;
   top: 20px;
-  left: 80px;
+  left: 50px;
   z-index: 1000;
   background: white;
   padding: 10px;
@@ -207,4 +207,43 @@ html {
 
 .suggestion-item.highlighted {
   background-color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+    #metro-search {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        z-index: 1000;
+    }
+    
+    #metro-search-input {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+    
+    #metro-suggestions {
+        max-height: 200px;
+        top: 50px !important;
+        left: 10px !important;
+        right: 10px !important;
+    }
+    
+    .dg-popup {
+        max-width: 280px !important;
+    }
+}
+
+.metro-popup-mobile {
+    font-size: 14px;
+    padding: 8px;
+}
+@media (min-width: 769px) {
+    .metro-popup-mobile {
+        font-size: 16px;
+        padding: 12px;
+    }
 }

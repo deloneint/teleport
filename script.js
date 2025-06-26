@@ -336,6 +336,16 @@ function initMetroSearch() {
     const input = document.getElementById('metro-search-input');
     const suggestions = document.getElementById('metro-suggestions');
 
+     // Мобильный обработчик фокуса
+    input.addEventListener('focus', function() {
+        if (window.innerWidth <= 768) {
+            map.setZoom(13);
+            setTimeout(() => {
+                suggestions.style.display = 'block';
+            }, 300);
+        }
+    });
+
     // Собираем все станции метро в один массив
     metroStationsList = metroData.Москва.lines.flatMap(line =>
         line.stations.map(station => ({
@@ -440,7 +450,7 @@ function selectMetroStation(station) {
         icon: DG.icon({
             iconUrl: './iconMetro.svg',
             iconSize: [24, 24],
-            iconAnchor: [16, 24]
+            iconAnchor: [12, 12]
         })
     })
         .bindPopup(`
@@ -452,7 +462,8 @@ function selectMetroStation(station) {
         .addTo(map);
 
     // Центрируем карту
-    map.setView(station.coords, 16);
+    const zoomLevel = window.innerWidth <= 768 ? 15 : 16;
+    map.flyTo(station.coords, zoomLevel);
 
     // Заполняем поле ввода
     document.getElementById('metro-search-input').value = station.name;
