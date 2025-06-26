@@ -438,9 +438,9 @@ function selectMetroStation(station) {
     // Создаем новый маркер
     window.currentMetroMarker = DG.marker(station.coords, {
         icon: DG.icon({
-            iconUrl: createCircleIcon(lineColor),
-            iconSize: [32, 32],
-            iconAnchor: [16, 32]
+            iconUrl: './iconMetro.svg',
+            iconSize: [24, 24],
+            iconAnchor: [16, 24]
         })
     })
         .bindPopup(`

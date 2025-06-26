@@ -149,8 +149,8 @@ html {
 /*Станции метро*/
 .map-control {
   position: absolute;
-  bottom: 20px;
-  left: 20px;
+  top: 20px;
+  left: 80px;
   z-index: 1000;
   background: white;
   padding: 10px;
@@ -176,8 +176,8 @@ html {
 }
 
 #metro-search-input {
-  width: 100%;
   padding: 8px;
+  margin: 0 8px 0 0;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
