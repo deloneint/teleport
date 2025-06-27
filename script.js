@@ -274,7 +274,6 @@ function showMetroStations(city) {
 
     //Добавляем каждую ветку
     cityMetro.lines.forEach(line => {
-        //Линия между станциями
         const stationsCoords = line.stations.map(st => st.coords);
         const polyline = DG.polyline(stationsCoords, {
           color: line.color,
