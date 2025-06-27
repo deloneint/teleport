@@ -274,13 +274,13 @@ function showMetroStations(city) {
 
     //Добавляем каждую ветку
     cityMetro.lines.forEach(line => {
-        //Линия между станциями
-        //const stationsCoords = line.stations.map(st => st.coords);
-        //const polyline = DG.polyline(stationsCoords, {
-        //  color: line.color,
-        //weight: 6,
-        //opacity: 0.8
-        //}).addTo(metroLayer);
+        Линия между станциями
+        const stationsCoords = line.stations.map(st => st.coords);
+        const polyline = DG.polyline(stationsCoords, {
+          color: line.color,
+        weight: 6,
+        opacity: 0.8
+        }).addTo(metroLayer);
 
         //Станции
         line.stations.forEach(station => {
