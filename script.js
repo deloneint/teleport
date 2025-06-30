@@ -288,7 +288,7 @@ function showMetroStations(city) {
                 icon: DG.icon({
                     iconUrl: createCircleIcon(lineColor).toDataURL(),
                     iconSize: [12, 12],
-                    iconAnchor: [12, 12]
+                    iconAnchor: [5, 5]
                 })
             })
                 .bindPopup(`<b>${station.name}</b><br>Линия: ${line.name}`)
